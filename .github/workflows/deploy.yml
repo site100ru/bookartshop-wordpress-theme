@@ -19,4 +19,7 @@ jobs:
             #git clone git@github.com:site100ru/site100bookartshop.git .
             
             cd /var/www/u1538455/data/www/bookartshop.ru/wp-content/themes/site100bookartshop
+            # git pull
+            git stash
             git pull
+            git stash pop
