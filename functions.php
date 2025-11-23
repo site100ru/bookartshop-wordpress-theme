@@ -218,30 +218,4 @@ function send_admin_email_on_payment($order_id) {
     $order->update_meta_data('_admin_email_sent', 'yes');
     $order->save();
 }
-
-
-add_filter('woocommerce_product_add_to_cart_text', 'change_button_for_category', 99);
-add_filter('woocommerce_product_single_add_to_cart_text', 'change_button_for_category', 99);
-
-function change_button_for_category($text) {
-    global $product;
-    
-    if (!$product) return $text;
-    
-    // Получаем все категории товара
-    $terms = get_the_terms($product->get_id(), 'product_cat');
-    
-    if ($terms) {
-        foreach ($terms as $term) {
-            if ($term->slug == 'delivery') {
-                return 'Выставить счёт';
-            }
-        }
-    }
-    
-    return $text;
-}
-
 ?>
-
-
