@@ -218,4 +218,17 @@ function send_admin_email_on_payment($order_id) {
     $order->update_meta_data('_admin_email_sent', 'yes');
     $order->save();
 }
+
+    add_filter('woocommerce_product_add_to_cart_text', 'change_button_for_category');
+    add_filter('woocommerce_product_single_add_to_cart_text', 'change_button_for_category');
+
+    function change_button_for_category($text) {
+        global $product;
+        
+        if (has_term('delivery', 'product_cat', $product->get_id())) {
+            return 'Выставить счёт';
+        }
+        
+        return $text;
+    }
 ?>
