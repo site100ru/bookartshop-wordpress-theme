@@ -276,6 +276,7 @@ function send_admin_email_on_payment($order_id) {
         $message .= "\nИТОГО: " . number_format($total, 2, ',', ' ') . " ₽\n";
         
         mail('sidorov-vv3@mail.ru', $subject, $message);
+        mail('vasilyev-r@mail.ru', $subject, $message);
         
         WC()->cart->empty_cart();
         
