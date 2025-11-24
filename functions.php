@@ -205,10 +205,11 @@ function send_admin_email_on_payment($order_id) {
     
     $message .= "ТОВАРЫ:\n";
     foreach ($order->get_items() as $item) {
-        $message .= "- " . $item->get_name() . " x" . $item->get_quantity() . " = " . strip_tags($order->get_formatted_line_subtotal($item)) . "\n";
+        $subtotal = $item->get_total();
+        $message .= "- " . $item->get_name() . " x" . $item->get_quantity() . " = " . number_format($subtotal, 2, ',', ' ') . " ₽\n";
     }
-    
-    $message .= "\nИТОГО: " . strip_tags($order->get_formatted_order_total()) . "\n\n";
+
+    $message .= "\nИТОГО: " . number_format($order->get_total(), 2, ',', ' ') . " ₽\n\n";
     $message .= "Ссылка на заказ: " . admin_url('post.php?post=' . $order_id . '&action=edit') . "\n";
     
     foreach ($admin_emails as $email) {
@@ -230,5 +231,54 @@ function send_admin_email_on_payment($order_id) {
         }
         
         return $text;
+    }
+
+    // Проверка есть ли товары из категории delivery
+    function cart_has_delivery_products() {
+        if (!WC()->cart) return false;
+        
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (has_term('delivery', 'product_cat', $cart_item['product_id'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Новый AJAX для отправки на email
+    add_action('wp_ajax_delivery_checkout', 'delivery_checkout_ajax');
+    add_action('wp_ajax_nopriv_delivery_checkout', 'delivery_checkout_ajax');
+
+    function delivery_checkout_ajax() {
+        $name = sanitize_text_field($_POST['billing_first_name']);
+        $email = sanitize_email($_POST['billing_email']);
+        $phone = sanitize_text_field($_POST['billing_phone']);
+        $address = sanitize_textarea_field($_POST['billing_address']);
+        
+        $subject = '=?utf-8?B?' . base64_encode('Новый заказ на доставку') . '?=';
+        
+        $message = "НОВЫЙ ЗАКАЗ НА ДОСТАВКУ\n\n";
+        $message .= "Имя: $name\n";
+        $message .= "Email: $email\n";
+        $message .= "Телефон: $phone\n";
+        $message .= "Адрес доставки: $address\n\n";
+        
+        $message .= "ТОВАРЫ:\n";
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            $product = $cart_item['data'];
+            $price = $product->get_price();
+            $qty = $cart_item['quantity'];
+            $subtotal = $price * $qty;
+            $message .= "- " . $product->get_name() . " x" . $qty . " = " . number_format($subtotal, 2, ',', ' ') . " ₽\n";
+        }
+
+        $total = WC()->cart->get_cart_contents_total();
+        $message .= "\nИТОГО: " . number_format($total, 2, ',', ' ') . " ₽\n";
+        
+        mail('sidorov-vv3@mail.ru', $subject, $message);
+        
+        WC()->cart->empty_cart();
+        
+        wp_send_json_success(array('message' => 'Заявка отправлена'));
     }
 ?>

@@ -1,103 +1,302 @@
-			<div id="rec96818470" class="r t-rec" style=" " data-animationappear="off" data-record-type="706" >
-				<!--tcart-->
-                <script>
-                // исходный код. Он показывает корзину и обрабатывает ее. Ранее js перехватывал событие и отправлял данные на тильду.
-                $(document).ready(function(){	
-                    tcart__init('96818470', '');	
+            <!-- Корзина WooCommerce с визуалом Tilda -->
+            <div class="t706" style="position: fixed; top: 0; right: 0; z-index: 9999;">
+                <div class="t706__carticon" style="cursor: pointer;">
+                    <div class="t706__carticon-text t-name t-name_xs">
+                        = <?php echo WC()->cart ? WC()->cart->get_total() : '0 ₽'; ?>
+                    </div>
+                    <div class="t706__carticon-wrapper">
+                        <div class="t706__carticon-imgwrap">
+                            <svg class="t706__carticon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                                <path fill="none" stroke-width="2" stroke-miterlimit="10" d="M44 18h10v45H10V18h10z" />
+                                <path fill="none" stroke-width="2" stroke-miterlimit="10" d="M22 24V11c0-5.523 4.477-10 10-10s10 4.477 10 10v13" />
+                            </svg>
+                        </div>
+                        <div class="t706__carticon-counter" style="background-color:#fa2d2d; <?php echo WC()->cart && WC()->cart->get_cart_contents_count() > 0 ? '' : 'display:none;'; ?>">
+                            <?php echo WC()->cart ? WC()->cart->get_cart_contents_count() : 0; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t706__cartwin" style="display: none;">
+                    <div class="t706__cartwin-close">
+                        <div class="t706__cartwin-close-wrapper"> <svg class="t706__cartwin-close-icon" width="23px" height="23px" viewBox="0 0 23 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <g stroke="none" stroke-width="1" fill="#fff" fill-rule="evenodd">
+                                    <rect transform="translate(11.313708, 11.313708) rotate(-45.000000) translate(-11.313708, -11.313708) " x="10.3137085" y="-3.6862915" width="2" height="30"></rect>
+                                    <rect transform="translate(11.313708, 11.313708) rotate(-315.000000) translate(-11.313708, -11.313708) " x="10.3137085" y="-3.6862915" width="2" height="30"></rect>
+                                </g>
+                            </svg> </div>
+                    </div>
+
+                    <div class="t706__cartwin-content">
+                        <div class="t706__cartwin-top">
+                            <div class="t706__cartwin-heading t-name t-name_xl">Ваш заказ:</div>
+                        </div>
+
+                        <div class="t706__cartwin-products">
+                            <?php if (WC()->cart && !WC()->cart->is_empty()) : ?>
+                                <?php foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) :
+                                    $product = $cart_item['data'];
+                                    $product_id = $cart_item['product_id'];
+                                ?>
+                                    <div class="t706__product" data-cart-key="<?php echo esc_attr($cart_item_key); ?>">
+                                        <div class="t706__product-title t-descr t-descr_sm">
+                                            <a style="color: inherit" href="<?php echo get_permalink($product_id); ?>">
+                                                <?php echo $product->get_name(); ?>
+                                            </a>
+                                        </div>
+                                        <div class="t706__product-plusminus t-descr t-descr_sm">
+                                            <span class="t706__product-minus" data-action="minus">-</span>
+                                            <span class="t706__product-quantity"><?php echo $cart_item['quantity']; ?></span>
+                                            <span class="t706__product-plus" data-action="plus">+</span>
+                                        </div>
+                                        <div class="t706__product-amount t-descr t-descr_sm">
+                                            <?php echo WC()->cart->get_product_subtotal($product, $cart_item['quantity']); ?>
+                                        </div>
+                                        <div class="t706__product-del" data-action="remove">×</div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <p>Корзина пуста</p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="t706__cartwin-bottom">
+                            <div class="t706__cartwin-prodamount-wrap t-descr t-descr_sm">
+                                <span class="t706__cartwin-prodamount-label">Сумма: </span>
+                                <span class="t706__cartwin-prodamount"><?php echo WC()->cart ? WC()->cart->get_total() : '0 ₽'; ?></span>
+                            </div>
+                        </div>
+
+                        <div class="t706__orderform">
+                            <?php if (cart_has_delivery_products()) : ?>
+                                <!-- Форма для delivery -->
+                                <form id="delivery-checkout-form" style="margin: 20px 0;">
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваше имя</div>
+                                        <input class="t-input js-tilda-rule" type="text" name="billing_first_name" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваш Email</div>
+                                        <input class="t-input js-tilda-rule" type="email" name="billing_email" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваш телефон</div>
+                                        <input class="t-input js-tilda-rule" type="tel" name="billing_phone" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Адрес доставки</div>
+                                        <textarea class="t-input js-tilda-rule" name="billing_address" required rows="3"
+                                            style="color:#000000; border:1px solid #000000; height:auto; padding:10px;"></textarea>
+                                    </div>
+                                    <div class="t-form__submit">
+                                        <button type="submit" class="t-submit" style="color:#ffffff;background-color:#000000; border:none; width:100%; cursor:pointer; padding:15px;">
+                                            Отправить заявку
+                                        </button>
+                                    </div>
+                                </form>
+                            <?php else : ?>
+                                <!-- Обычная форма для Робокассы -->
+                                <form id="quick-checkout-form" style="margin: 20px 0;">
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваше имя</div>
+                                        <input class="t-input js-tilda-rule" type="text" name="billing_first_name" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваш Email</div>
+                                        <input class="t-input js-tilda-rule" type="email" name="billing_email" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="t-input-title t-descr t-descr_md">Ваш телефон</div>
+                                        <input class="t-input js-tilda-rule" type="tel" name="billing_phone" required
+                                            style="color:#000000; border:1px solid #000000;">
+                                    </div>
+                                    <div class="t-form__submit">
+                                        <button type="submit" class="t-submit" style="color:#ffffff;background-color:#000000; border:none; width:100%; cursor:pointer; padding:15px;">
+                                            Оформить заказ
+                                        </button>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .t706 .t-descr_md {
+                    font-size: 16px;
+                }
+
+                .t706 .t-input {
+                    height: 56px;
+                }
+            </style>
+
+            <script>
+                jQuery(document).ready(function($) {
+                // Перехватываем клик на кнопку "Купить"
+                $(document).on('click', '.ajax_add_to_cart', function(e) {
+                    e.preventDefault();
                     
-                    /* hack for Android */ 
-                    var ua = navigator.userAgent.toLowerCase(); 
-                    var isAndroid = (ua.indexOf("android") > -1); 
-                    if(isAndroid && !$('.t-body').hasClass('t-body_scrollable-hack-for-android')) { 
-                        $('.t-body').addClass('t-body_scrollable-hack-for-android'); 
-                        $('head').append("<style>@media screen and (max-width: 560px) {\n.t-body_scrollable-hack-for-android {\noverflow: visible !important;\n}\n}\n</style>"); 
-                        console.log('Android css hack was inited'); 
-                    } 
+                    var $button = $(this);
+                    var href = $button.attr('href'); // например ?add-to-cart=885
                     
-                    /* fix Instagram iPhone keyboard bug */ 
-                    if(ua.indexOf("instagram") !== -1 && ua.indexOf("iphone") !== -1) { 
-                        $(".t-body").css("position", "relative"); 
-                    } 
+                    // Показываем что идет загрузка
+                    $button.text('Добавляем...');
                     
-                    var cartWindow = $("#rec96818470 .t706__cartwin"); 
-                    var curMode = $(".t-records").attr("data-tilda-mode"); 
-                    if (cartWindow.length && curMode != "edit" && curMode != "preview") { 
-                        cartWindow.bind('scroll', t_throttle(function() { 
-                            if(window.lazy == "y") { 
-                                t_lazyload_update(); 
-                            } 
-                        }, 500)) 
+                    // Переходим на страницу добавления с нашим параметром
+                    window.location.href = href + '&open_cart=1';
+                });
+                
+                // Проверяем нужно ли открыть корзину после загрузки
+                if (window.location.search.indexOf('open_cart=1') !== -1) {
+                    setTimeout(function() {
+                        $('.t706__cartwin').fadeIn(300);
+                    }, 100);
+                    
+                    // Убираем параметры из URL без перезагрузки
+                    if (history.replaceState) {
+                        history.replaceState({}, '', window.location.pathname);
                     }
-                    
-                    // НАШЕ ДОПОЛНЕНИЕ - перехватываем отправку формы
-                    $('#form96818470').removeAttr('data-formcart'); // Убираем флаг Tilda
-                    
-                    $('#form96818470').on('submit', function(e) {
-                        e.preventDefault();
-                        
-                        var formData = $(this).serializeArray();
-                        
-                        // Добавляем данные корзины из объекта Tilda
-                        if (window.tcart && window.tcart.products && window.tcart.products.length > 0) {
-                            formData.push({name: 'Cart-Total', value: window.tcart.amount});
-                            formData.push({name: 'Cart-Quantity', value: window.tcart.total});
-                            
-                            var cartItems = '';
-                            $.each(window.tcart.products, function(i, product) {
-                                if (product && !product.deleted) {
-                                    cartItems += product.name + ' x' + product.quantity + ' = ' + product.amount + ' ' + window.tcart.currency + '\n';
-                                }
-                            });
-                            formData.push({name: 'Cart-Items', value: cartItems});
-                        }
-                        
-                        $.ajax({
-                            url: '<?php echo get_template_directory_uri(); ?>/mail/callback-mail.php',
-                            type: 'POST',
-                            data: $.param(formData),
-                            success: function(response) {
-                                $('.js-successbox').html('<p>Спасибо за заказ! Мы свяжемся с вами в ближайшее время.</p>').show();
-                                $('#form96818470')[0].reset();
-                                
-                                // Очищаем корзину
-                                window.tcart.products = [];
-                                localStorage.removeItem('tcart');
-                                tcart__loadLocalObj();
-                                tcart__reDrawCartIcon();
-                                
-                                setTimeout(function() {
-                                    tcart__closeCart();
-                                }, 2000);
-                            },
-                            error: function() {
-                                alert('Ошибка отправки. Попробуйте еще раз.');
-                            }
-                        });
+                }
+            });
+                
+                jQuery(document).ready(function($) {
+                    // Показываем иконку если есть товары
+                    <?php if (WC()->cart && WC()->cart->get_cart_contents_count() > 0) : ?>
+                        $('.t706__carticon').addClass('t706__carticon_showed').fadeIn();
+                        $('.t706__carticon-text').show();
+                    <?php endif; ?>
+
+                    // После добавления товара в корзину
+                    $(document.body).on('added_to_cart', function() {
+                        location.reload(); // Перезагрузка для обновления корзины
                     });
                 });
-                </script>
-				<div class="t706" data-opencart-onorder="yes" data-project-currency="₽" data-project-currency-side="r" data-project-currency-sep="," data-payment-system="robokassa" data-cart-sendevent-onadd="y" data-cart-ver="134">
-					<div class="t706__carticon" style="">
-						<div class="t706__carticon-text t-name t-name_xs">Click to order</div>
-						<div class="t706__carticon-wrapper"> <!--<div class="t706__carticon-imgwrap"><img class="t706__carticon-img" src="images/lib__linea__930cac0f-758b-b7ee-1eb0-b18fc6e10893__ecommerce_bag.svg"></div>--> <div class="t706__carticon-imgwrap" > <svg class="t706__carticon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"> <path fill="none" stroke-width="2" stroke-miterlimit="10" d="M44 18h10v45H10V18h10z"/> <path fill="none" stroke-width="2" stroke-miterlimit="10" d="M22 24V11c0-5.523 4.477-10 10-10s10 4.477 10 10v13"/> </svg> </div> <div class="t706__carticon-counter" style="background-color:#fa2d2d;"></div>
-						</div>
-					</div>
-					<div class="t706__cartwin">
-						<div class="t706__cartwin-close">
-							<div class="t706__cartwin-close-wrapper"> <svg class="t706__cartwin-close-icon" width="23px" height="23px" viewBox="0 0 23 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g stroke="none" stroke-width="1" fill="#fff" fill-rule="evenodd"> <rect transform="translate(11.313708, 11.313708) rotate(-45.000000) translate(-11.313708, -11.313708) " x="10.3137085" y="-3.6862915" width="2" height="30"></rect> <rect transform="translate(11.313708, 11.313708) rotate(-315.000000) translate(-11.313708, -11.313708) " x="10.3137085" y="-3.6862915" width="2" height="30"></rect> </g> </svg> </div>
-						</div>
-						<div class="t706__cartwin-content">
-							<div class="t706__cartwin-top"> <div class="t706__cartwin-heading t-name t-name_xl"></div> </div>
-							<div class="t706__cartwin-products"></div>
-                            <div class="t706__cartwin-bottom"> <div class="t706__cartwin-prodamount-wrap t-descr t-descr_sm"> <span class="t706__cartwin-prodamount-label">Total:&nbsp;</span><span class="t706__cartwin-prodamount"></span> </div> </div> <div class="t706__orderform "> <form id="form96818470" name='form96818470' role="form" action='mail/callback-mail.php' method='POST' data-formactiontype="2" data-inputbox=".t-input-group" class="t-form js-form-proccess t-form_inputs-total_3 " data-formsended-callback="t706_onSuccessCallback" > <input type="hidden" name="formservices[]" value="d2fa3d6bca8f7c99d24b9b19d88d8ca2" class="js-formaction-services"> <input type="hidden" name="tildaspec-formname" tabindex="-1" value="Cart"> <div class="js-successbox t-form__successbox t-text t-text_md" style="display:none;"></div> <div class="t-form__inputsbox"> <div class="t-input-group t-input-group_nm" data-input-lid="1496239431201"> <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1496239431201" style="">Ваше имя</div> <div class="t-input-block"> <input type="text" name="Name" class="t-input js-tilda-rule " value="" data-tilda-req="1" data-tilda-rule="name" style="color:#000000; border:1px solid #000000; "> <div class="t-input-error"></div> </div> </div> <div class="t-input-group t-input-group_em" data-input-lid="1496239459190"> <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1496239459190" style="">Ваш Email</div> <div class="t-input-block"> <input type="text" name="Email" class="t-input js-tilda-rule " value="" data-tilda-req="1" data-tilda-rule="email" style="color:#000000; border:1px solid #000000; "> <div class="t-input-error"></div> </div> </div> <div class="t-input-group t-input-group_ph" data-input-lid="1496239478607"> <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1496239478607" style="">Ваш телефон</div> <div class="t-input-block"> <input type="tel" name="Phone" class="t-input js-tilda-rule " value="" data-tilda-req="1" data-tilda-rule="phone" pattern="[0-9]*" style="color:#000000; border:1px solid #000000; "> <div class="t-input-error"></div> </div> </div>
-                            <!-- <div class="t-form__errorbox-middle"> <div class="js-errorbox-all t-form__errorbox-wrapper" style="display:none;"> <div class="t-form__errorbox-text t-text t-text_md"> <p class="t-form__errorbox-item js-rule-error js-rule-error-all"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-req"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-email"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-name"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-phone"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-minlength"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-string"></p> </div> </div></div>  -->
-                            <div class="t-form__submit"> <button type="submit" class="t-submit" style="color:#ffffff;background-color:#000000;" >Оформить заказ</button> </div> </div> <div class="t-form__errorbox-bottom"> <div class="js-errorbox-all t-form__errorbox-wrapper" style="display:none;"> <div class="t-form__errorbox-text t-text t-text_md"> <p class="t-form__errorbox-item js-rule-error js-rule-error-all"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-req"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-email"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-name"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-phone"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-minlength"></p> <p class="t-form__errorbox-item js-rule-error js-rule-error-string"></p> </div> </div> </div> </form><style>#rec96818470 input::-webkit-input-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 input::-moz-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 input:-moz-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 input:-ms-input-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 textarea::-webkit-input-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 textarea::-moz-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 textarea:-moz-placeholder {color:#000000; opacity: 0.5;}	#rec96818470 textarea:-ms-input-placeholder {color:#000000; opacity: 0.5;}</style> </div>
-						</div>
-					</div>
-					<div class="t706__cartdata"> </div>
-				</div>
-				<style></style><!--/tcart-->
-			</div>
+            </script>
+
+            <script>
+            jQuery(document).ready(function($) {
+                var isUpdating = false;
+                
+                $('.t706__carticon').on('click', function() {
+                    $('.t706__cartwin').fadeToggle(300);
+                });
+                
+                $('.t706__cartwin-close').on('click', function() {
+                    $('.t706__cartwin').fadeOut(300);
+                });
+                
+                // Плюс/минус/удаление
+                $(document).on('click', '.t706__product-minus, .t706__product-plus, .t706__product-del', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (isUpdating) return;
+                    isUpdating = true;
+                    
+                    var $product = $(this).closest('.t706__product');
+                    var cartKey = $product.data('cart-key');
+                    var currentQty = parseInt($product.find('.t706__product-quantity').text());
+                    var newQty = currentQty;
+                    
+                    if ($(this).hasClass('t706__product-plus')) {
+                        newQty = currentQty + 1;
+                    } else if ($(this).hasClass('t706__product-minus')) {
+                        newQty = Math.max(1, currentQty - 1);
+                    } else if ($(this).hasClass('t706__product-del')) {
+                        newQty = 0;
+                    }
+                    
+                    $.ajax({
+                        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                        type: 'POST',
+                        data: {
+                            action: 'update_cart_item',
+                            cart_item_key: cartKey,
+                            quantity: newQty
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                if (newQty === 0) {
+                                    $product.fadeOut(300, function() { $(this).remove(); });
+                                } else {
+                                    $product.find('.t706__product-quantity').text(newQty);
+                                    // Обновляем сумму товара
+                                    var price = parseFloat(response.data.item_total);
+                                    $product.find('.t706__product-amount').html(response.data.item_total_html);
+                                }
+                                // Обновляем общую сумму
+                                $('.t706__carticon-text').html('= ' + response.data.cart_total);
+                                $('.t706__cartwin-prodamount').html(response.data.cart_total);
+                                $('.t706__carticon-counter').text(response.data.cart_count);
+                                
+                                if (response.data.cart_count === 0) {
+                                    $('.t706__carticon').removeClass('t706__carticon_showed').fadeOut();
+                                    $('.t706__cartwin-products').html('<p>Корзина пуста</p>');
+                                }
+                            }
+                            isUpdating = false;
+                        },
+                        error: function() {
+                            isUpdating = false;
+                        }
+                    });
+                });
+                
+                $(document.body).on('added_to_cart', function() {
+                    location.reload();
+                });
+                
+                <?php if (WC()->cart && WC()->cart->get_cart_contents_count() > 0) : ?>
+                    $('.t706__carticon').addClass('t706__carticon_showed').fadeIn();
+                    $('.t706__carticon-text').show();
+                <?php endif; ?>
+                
+                $('#quick-checkout-form').on('submit', function(e) {
+                    e.preventDefault();
+                    var $btn = $(this).find('.t-submit');
+                    $btn.prop('disabled', true).text('Создаём заказ...');
+                    
+                    $.ajax({
+                        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                        type: 'POST',
+                        data: $(this).serialize() + '&action=quick_checkout',
+                        success: function(response) {
+                            if (response.success && response.data.redirect) {
+                                window.location.href = response.data.redirect;
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Обработчик для delivery формы
+            $('#delivery-checkout-form').on('submit', function(e) {
+                e.preventDefault();
+                var $btn = $(this).find('.t-submit');
+                $btn.prop('disabled', true).text('Отправляем...');
+                
+                $.ajax({
+                    url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                    type: 'POST',
+                    data: $(this).serialize() + '&action=delivery_checkout',
+                    success: function(response) {
+                        if (response.success) {
+                            $btn.text('Отправлено!');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+                        }
+                    }
+                });
+            });
+            </script>
 			
 			
 			<!--footer-->
