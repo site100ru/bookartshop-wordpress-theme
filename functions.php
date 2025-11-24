@@ -188,7 +188,7 @@ function send_admin_email_on_payment($order_id) {
     
     $admin_emails = array(
         'vasilyev-r@mail.ru',
-        'sidorov-vv3@mail.ru'
+        'book_ted@mail.ru'
     );
     
     $subject = '=?utf-8?B?' . base64_encode('Новый оплаченный заказ #' . $order->get_order_number()) . '?=';
@@ -275,7 +275,7 @@ function send_admin_email_on_payment($order_id) {
         $total = WC()->cart->get_cart_contents_total();
         $message .= "\nИТОГО: " . number_format($total, 2, ',', ' ') . " ₽\n";
         
-        mail('sidorov-vv3@mail.ru', $subject, $message);
+        mail('book_ted@mail.ru', $subject, $message);
         mail('vasilyev-r@mail.ru', $subject, $message);
         
         WC()->cart->empty_cart();
